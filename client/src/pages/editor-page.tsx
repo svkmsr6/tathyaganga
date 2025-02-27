@@ -95,9 +95,14 @@ export default function EditorPage() {
         title: "Success",
         description: "Content saved successfully",
       });
-      if (!id) {
-        setLocation("/");
-      }
+      setLocation("/"); // Redirect to home page after successful save
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error saving content",
+        description: error.message || "Please try again later",
+        variant: "destructive",
+      });
     },
   });
 
@@ -110,6 +115,13 @@ export default function EditorPage() {
       toast({
         title: `Fact Check Score: ${data.score}`,
         description: data.explanation,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error checking facts",
+        description: error.message || "Please try again later",
+        variant: "destructive",
       });
     },
   });
