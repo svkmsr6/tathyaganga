@@ -35,8 +35,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     mutationFn: async (credentials: LoginData) => {
       const res = await apiRequest("POST", "/api/login", credentials);
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "An error occurred during login. Please try again.");
+        let errorMsg = "Invalid username or password. Please try again.";
+        try {
+          const data = await res.json();
+          // Use only the message from the JSON
+          errorMsg = data.message || errorMsg;
+        } catch (err) {
+          errorMsg = await res.text() || errorMsg;
+        }
+        throw new Error(errorMsg);
       }
       return await res.json();
     },
@@ -60,8 +67,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     mutationFn: async (credentials: InsertUser) => {
       const res = await apiRequest("POST", "/api/register", credentials);
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "An error occurred during registration. Please try again.");
+        let errorMsg = "Registration failed. Please try again.";
+        try {
+          const data = await res.json();
+          // Use only the message from the JSON
+          errorMsg = data.message || errorMsg;
+        } catch (err) {
+          errorMsg = await res.text() || errorMsg;
+        }
+        throw new Error(errorMsg);
       }
       return await res.json();
     },
