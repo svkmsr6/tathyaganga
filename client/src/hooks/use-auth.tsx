@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/login", credentials);
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message);
+        throw data; // Throw the full error object
       }
       return await res.json();
     },
@@ -47,10 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "Successfully logged in to your account.",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => { // Using any type to handle the error object
       toast({
         title: "Login Failed",
-        description: error.message,
+        description: error.message || "Invalid username or password. Please try again.",
         variant: "destructive",
       });
     },
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/register", credentials);
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message);
+        throw data; // Throw the full error object
       }
       return await res.json();
     },
@@ -72,10 +72,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "Your account has been created successfully.",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => { // Using any type to handle the error object
       toast({
-        title: "Registration failed",
-        description: error.message,
+        title: "Registration Failed",
+        description: error.message || "Unable to create your account. Please try again.",
         variant: "destructive",
       });
     },
