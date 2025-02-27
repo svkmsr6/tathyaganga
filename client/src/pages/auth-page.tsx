@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
@@ -72,6 +73,7 @@ export default function AuthPage() {
 
 function LoginForm() {
   const { loginMutation } = useAuth();
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
@@ -81,7 +83,15 @@ function LoginForm() {
   });
 
   async function onSubmit(values: { username: string; password: string }) {
-    await loginMutation.mutateAsync(values);
+    try {
+      await loginMutation.mutateAsync(values);
+      toast({
+        title: "Welcome back!",
+        description: "Successfully logged in to your account.",
+      });
+    } catch (error) {
+      // Error is already handled by the mutation
+    }
   }
 
   return (
@@ -94,7 +104,7 @@ function LoginForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} autoComplete="username" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,7 +117,7 @@ function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" {...field} autoComplete="current-password" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -127,16 +137,26 @@ function LoginForm() {
 
 function RegisterForm() {
   const { registerMutation } = useAuth();
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
       username: "",
       password: "",
     },
+    mode: "onChange", // Enable real-time validation
   });
 
   async function onSubmit(values: { username: string; password: string }) {
-    await registerMutation.mutateAsync(values);
+    try {
+      await registerMutation.mutateAsync(values);
+      toast({
+        title: "Welcome to Tathyaganga!",
+        description: "Your account has been created successfully.",
+      });
+    } catch (error) {
+      // Error is already handled by the mutation
+    }
   }
 
   return (
@@ -149,9 +169,12 @@ function RegisterForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} autoComplete="username" />
               </FormControl>
               <FormMessage />
+              <p className="text-xs text-muted-foreground">
+                5-20 characters, must start with a letter, can contain letters, numbers, and underscores
+              </p>
             </FormItem>
           )}
         />
@@ -162,9 +185,12 @@ function RegisterForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" {...field} autoComplete="new-password" />
               </FormControl>
               <FormMessage />
+              <p className="text-xs text-muted-foreground">
+                8-100 characters, must include uppercase letter, number, and special character
+              </p>
             </FormItem>
           )}
         />
