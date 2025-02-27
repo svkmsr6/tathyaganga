@@ -35,17 +35,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     mutationFn: async (credentials: LoginData) => {
       const res = await apiRequest("POST", "/api/login", credentials);
       if (!res.ok) {
-        const error = await res.text();
-        throw new Error(error || "Invalid username or password");
+        const errorData = await res.json();
+        throw new Error(errorData.message || "An error occurred during login. Please try again.");
       }
       return await res.json();
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      toast({
+        title: "Welcome back!",
+        description: "Successfully logged in to your account.",
+      });
     },
     onError: (error: Error) => {
       toast({
-        title: "Login failed",
+        title: "Unable to log in",
         description: error.message || "Please check your credentials and try again",
         variant: "destructive",
       });
@@ -55,10 +59,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const registerMutation = useMutation({
     mutationFn: async (credentials: InsertUser) => {
       const res = await apiRequest("POST", "/api/register", credentials);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "An error occurred during registration. Please try again.");
+      }
       return await res.json();
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      toast({
+        title: "Welcome to Tathyaganga!",
+        description: "Your account has been created successfully.",
+      });
     },
     onError: (error: Error) => {
       toast({

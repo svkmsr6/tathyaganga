@@ -50,7 +50,7 @@ export function setupAuth(app: Express) {
       try {
         const user = await storage.getUserByUsername(username);
         if (!user || !(await comparePasswords(password, user.password))) {
-          return done(null, false);
+          return done(null, false, { message: "Invalid username or password. Please check your credentials and try again." });
         } else {
           return done(null, user);
         }
@@ -74,7 +74,10 @@ export function setupAuth(app: Express) {
     try {
       const existingUser = await storage.getUserByUsername(req.body.username);
       if (existingUser) {
-        return res.status(400).send("Username already exists");
+        return res.status(400).json({ 
+          error: "Registration failed",
+          message: "This username is already taken. Please choose a different username." 
+        });
       }
 
       const user = await storage.createUser({
@@ -91,8 +94,24 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.status(200).json(req.user);
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).json({
+          error: "Login failed",
+          message: info?.message || "Invalid credentials. Please check your username and password."
+        });
+      }
+      req.login(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        return res.status(200).json(user);
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {
@@ -103,7 +122,12 @@ export function setupAuth(app: Express) {
   });
 
   app.get("/api/user", (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({
+        error: "Authentication required",
+        message: "Please log in to access this resource."
+      });
+    }
     res.json(req.user);
   });
 }
