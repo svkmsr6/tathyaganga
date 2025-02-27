@@ -12,12 +12,34 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Editor from "@/components/editor";
 import { useEffect } from "react";
+import { z } from "zod";
 
-type FormValues = {
-  title: string;
-  content: string;
-  status: string;
-};
+// Helper function to count words
+function countWords(text: string): number {
+  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+}
+
+// Extended schema with word count validation
+const formSchema = insertContentSchema.extend({
+  title: z.string()
+    .refine(
+      (title) => {
+        const wordCount = countWords(title);
+        return wordCount >= 2 && wordCount <= 50;
+      },
+      "Title must be between 2 and 50 words"
+    ),
+  content: z.string()
+    .refine(
+      (content) => {
+        const wordCount = countWords(content);
+        return wordCount >= 50 && wordCount <= 500;
+      },
+      "Content must be between 50 and 500 words"
+    )
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function EditorPage() {
   const { id } = useParams();
@@ -30,13 +52,17 @@ export default function EditorPage() {
   });
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(insertContentSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       content: "",
       status: "draft",
     },
+    mode: "onChange", // Enable real-time validation
   });
+
+  // Get form state for validation
+  const { isValid } = form.formState;
 
   // Update form values when content is loaded
   useEffect(() => {
@@ -130,6 +156,9 @@ export default function EditorPage() {
                       <Input {...field} />
                     </FormControl>
                     <FormMessage />
+                    <p className="text-xs text-muted-foreground">
+                      Word count: {countWords(field.value)} (2-50 words required)
+                    </p>
                   </FormItem>
                 )}
               />
@@ -147,6 +176,9 @@ export default function EditorPage() {
                       />
                     </FormControl>
                     <FormMessage />
+                    <p className="text-xs text-muted-foreground">
+                      Word count: {countWords(field.value)} (50-500 words required)
+                    </p>
                   </FormItem>
                 )}
               />
@@ -159,7 +191,7 @@ export default function EditorPage() {
                     const content = form.getValues("content");
                     factCheckMutation.mutate(content);
                   }}
-                  disabled={factCheckMutation.isPending}
+                  disabled={!isValid || factCheckMutation.isPending}
                 >
                   {factCheckMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -167,7 +199,7 @@ export default function EditorPage() {
                   Fact Check
                 </Button>
 
-                <Button type="submit" disabled={saveMutation.isPending}>
+                <Button type="submit" disabled={!isValid || saveMutation.isPending}>
                   {saveMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : (
