@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     mutationFn: async (credentials: LoginData) => {
       const res = await apiRequest("POST", "/api/login", credentials);
       if (!res.ok) {
-        let errorMsg = "Invalid username or password. Please try again.";
+        let errorMsg = "Invalid username or password. Please check your credentials and try again.";
         try {
           const data = await res.json();
           // Use only the message from the JSON
@@ -56,8 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onError: (error: Error) => {
       toast({
-        title: "Unable to log in",
-        description: error.message || "Please check your credentials and try again",
+        title: "Login Failed",
+        description: error.message,
         variant: "destructive",
       });
     },
