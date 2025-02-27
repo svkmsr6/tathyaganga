@@ -35,8 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     mutationFn: async (credentials: LoginData) => {
       const res = await apiRequest("POST", "/api/login", credentials);
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message); // Only throw the message part
+        // Always throw a generic error, regardless of server response
+        throw new Error("Login failed");
       }
       return await res.json();
     },
@@ -47,10 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "Successfully logged in to your account.",
       });
     },
-    onError: (error: Error) => {
+    onError: () => {
       toast({
-        title: "Login Failed",
-        description: error.message,
+        title: "Unable to Log In",
+        description: "The username or password you entered is incorrect. Please verify your credentials and try again.",
         variant: "destructive",
       });
     },
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/register", credentials);
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message); // Only throw the message part
+        throw new Error(data.message); // Keep detailed messages for registration
       }
       return await res.json();
     },
