@@ -32,6 +32,24 @@ export default {
     success: "ಯಶಸ್ಸು",
     settings: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
     darkMode: "ಡಾರ್ಕ್ ಮೋಡ್",
-    language: "ಪ್ರದರ್ಶನ ಭಾಷೆ"
+    language: "ಪ್ರದರ್ಶನ ಭಾಷೆ",
+    appName: "ತಥ್ಯಗಂಗಾ",
+    logo: "ತಥ್ಯಗಂಗಾ ಲೋಗೋ"
+  },
+  nav: {
+    dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    newContent: "ಹೊಸ ವಿಷಯ",
+    settings: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+    logout: "ಲಾಗ್ ಔಟ್"
+  },
+  editor: {
+    title: "ವಿಷಯ ಸಂಪಾದಕ",
+    newTitle: "ಹೊಸ ವಿಷಯ ರಚಿಸಿ",
+    editTitle: "ವಿಷಯ ಸಂಪಾದಿಸಿ",
+    saveButton: "ಉಳಿಸಿ",
+    publishButton: "ಪ್ರಕಟಿಸಿ",
+    factCheck: "ಸತ್ಯಾಂಶ ಪರಿಶೀಲನೆ",
+    contentPlaceholder: "ಇಲ್ಲಿ ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬರೆಯಲು ಪ್ರಾರಂಭಿಸಿ...",
+    titlePlaceholder: "ಶೀರ್ಷಿಕೆ ನಮೂದಿಸಿ..."
   }
 };

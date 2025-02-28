@@ -32,6 +32,24 @@ export default {
     success: "सफलता",
     settings: "सेटिंग्स",
     darkMode: "डार्क मोड",
-    language: "प्रदर्शन भाषा"
+    language: "प्रदर्शन भाषा",
+    appName: "तथ्यगंगा",
+    logo: "तथ्यगंगा लोगो"
+  },
+  nav: {
+    dashboard: "डैशबोर्ड",
+    newContent: "नई सामग्री",
+    settings: "सेटिंग्स",
+    logout: "लॉगआउट"
+  },
+  editor: {
+    title: "सामग्री संपादक",
+    newTitle: "नई सामग्री बनाएं",
+    editTitle: "सामग्री संपादित करें",
+    saveButton: "सहेजें",
+    publishButton: "प्रकाशित करें",
+    factCheck: "तथ्य जाँच",
+    contentPlaceholder: "यहाँ अपनी सामग्री लिखना शुरू करें...",
+    titlePlaceholder: "शीर्षक दर्ज करें..."
   }
 };

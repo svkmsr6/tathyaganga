@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/use-auth";
+import { useTranslations } from "@/hooks/use-translations";
 import { 
   Layout, 
   FileText, 
@@ -14,33 +15,34 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
 interface NavItem {
-  title: string;
+  titleKey: string;
   href: string;
   icon: React.ReactNode;
 }
-
-const navItems: NavItem[] = [
-  {
-    title: "Dashboard",
-    href: "/",
-    icon: <Layout className="h-4 w-4" />,
-  },
-  {
-    title: "New Content",
-    href: "/editor",
-    icon: <FileText className="h-4 w-4" />,
-  },
-  {
-    title: "Settings",
-    href: "/settings",
-    icon: <Settings className="h-4 w-4" />,
-  },
-];
 
 export default function SidebarNav() {
   const [location] = useLocation();
   const { logoutMutation } = useAuth();
   const [open, setOpen] = useState(false);
+  const { t } = useTranslations();
+
+  const navItems: NavItem[] = [
+    {
+      titleKey: "nav.dashboard",
+      href: "/",
+      icon: <Layout className="h-4 w-4" />,
+    },
+    {
+      titleKey: "nav.newContent",
+      href: "/editor",
+      icon: <FileText className="h-4 w-4" />,
+    },
+    {
+      titleKey: "nav.settings",
+      href: "/settings",
+      icon: <Settings className="h-4 w-4" />,
+    },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-background border-b z-50">
@@ -57,10 +59,10 @@ export default function SidebarNav() {
                 <div className="flex items-center gap-2 px-4 py-2">
                   <img
                     src="https://images.unsplash.com/photo-1460925895917-afdab827c52f"
-                    alt="Logo"
+                    alt={t('common.logo')}
                     className="h-8 w-8 rounded"
                   />
-                  <h1 className="text-lg font-bold">Tathyaganga</h1>
+                  <h1 className="text-lg font-bold">{t('common.appName')}</h1>
                 </div>
                 <ScrollArea className="flex-1 px-2">
                   <div className="space-y-1 py-2">
@@ -72,7 +74,7 @@ export default function SidebarNav() {
                           onClick={() => setOpen(false)}
                         >
                           {item.icon}
-                          <span className="ml-2">{item.title}</span>
+                          <span className="ml-2">{t(item.titleKey)}</span>
                         </Button>
                       </Link>
                     ))}
@@ -82,7 +84,7 @@ export default function SidebarNav() {
                       onClick={() => logoutMutation.mutate()}
                     >
                       <LogOut className="h-4 w-4 mr-2" />
-                      Logout
+                      {t('nav.logout')}
                     </Button>
                   </div>
                 </ScrollArea>
@@ -91,10 +93,10 @@ export default function SidebarNav() {
           </Sheet>
           <img
             src="https://images.unsplash.com/photo-1460925895917-afdab827c52f"
-            alt="Logo"
+            alt={t('common.logo')}
             className="h-8 w-8 rounded"
           />
-          <h1 className="text-lg font-bold">Tathyaganga</h1>
+          <h1 className="text-lg font-bold">{t('common.appName')}</h1>
         </div>
 
         {/* Desktop Navigation */}
@@ -108,7 +110,7 @@ export default function SidebarNav() {
                 )}
               >
                 {item.icon}
-                <span className="ml-2">{item.title}</span>
+                <span className="ml-2">{t(item.titleKey)}</span>
               </Button>
             </Link>
           ))}
@@ -118,7 +120,7 @@ export default function SidebarNav() {
             onClick={() => logoutMutation.mutate()}
           >
             <LogOut className="h-4 w-4 mr-2" />
-            Logout
+            {t('nav.logout')}
           </Button>
         </nav>
       </div>

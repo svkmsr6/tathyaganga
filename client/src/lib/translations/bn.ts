@@ -32,6 +32,24 @@ export default {
     success: "সফল",
     settings: "সেটিংস",
     darkMode: "ডার্ক মোড",
-    language: "প্রদর্শনের ভাষা"
+    language: "প্রদর্শনের ভাষা",
+    appName: "তথ্যগঙ্গা",
+    logo: "তথ্যগঙ্গা লোগো"
+  },
+  nav: {
+    dashboard: "ড্যাশবোর্ড",
+    newContent: "নতুন কন্টেন্ট",
+    settings: "সেটিংস",
+    logout: "লগআউট"
+  },
+  editor: {
+    title: "কন্টেন্ট এডিটর",
+    newTitle: "নতুন কন্টেন্ট তৈরি করুন",
+    editTitle: "কন্টেন্ট সম্পাদনা করুন",
+    saveButton: "সংরক্ষণ করুন",
+    publishButton: "প্রকাশ করুন",
+    factCheck: "তথ্য যাচাই",
+    contentPlaceholder: "এখানে আপনার কন্টেন্ট লেখা শুরু করুন...",
+    titlePlaceholder: "শিরোনাম লিখুন..."
   }
 };

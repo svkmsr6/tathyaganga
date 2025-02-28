@@ -32,6 +32,24 @@ export default {
     success: "Success",
     settings: "Settings",
     darkMode: "Dark Mode",
-    language: "Display Language"
+    language: "Display Language",
+    appName: "Tathyaganga",
+    logo: "Tathyaganga Logo"
+  },
+  nav: {
+    dashboard: "Dashboard",
+    newContent: "New Content",
+    settings: "Settings",
+    logout: "Logout"
+  },
+  editor: {
+    title: "Content Editor",
+    newTitle: "Create New Content",
+    editTitle: "Edit Content",
+    saveButton: "Save",
+    publishButton: "Publish",
+    factCheck: "Fact Check",
+    contentPlaceholder: "Start writing your content here...",
+    titlePlaceholder: "Enter title..."
   }
 };
