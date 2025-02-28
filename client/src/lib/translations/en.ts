@@ -57,7 +57,17 @@ export default {
     titleLabel: "Title",
     contentLabel: "Content",
     wordCount: "Word count: {count}",
-    wordsRequired: "words required"
+    wordsRequired: "words required",
+    validation: {
+      titleLength: "Title must be between 2 and 50 words",
+      contentLength: "Content must be between 50 and 500 words",
+    },
+    messages: {
+      saveSuccess: "Content saved successfully",
+      saveError: "Error saving content",
+      factCheckError: "Error checking facts",
+      tryAgain: "Please try again later",
+    }
   },
   dashboard: {
     welcome: "Welcome, {username}",

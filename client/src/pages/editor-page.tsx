@@ -11,7 +11,7 @@ import { Loader2, Save, ArrowLeft } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Editor from "@/components/editor";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { z } from "zod";
 import { useTranslations } from "@/hooks/use-translations";
 
@@ -20,33 +20,35 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(word => word.length > 0).length;
 }
 
-// Extended schema with word count validation
-const formSchema = insertContentSchema.extend({
-  title: z.string()
-    .refine(
-      (title) => {
-        const wordCount = countWords(title);
-        return wordCount >= 2 && wordCount <= 50;
-      },
-      "Title must be between 2 and 50 words"
-    ),
-  content: z.string()
-    .refine(
-      (content) => {
-        const wordCount = countWords(content);
-        return wordCount >= 50 && wordCount <= 500;
-      },
-      "Content must be between 50 and 500 words"
-    )
-});
-
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof insertContentSchema>;
 
 export default function EditorPage() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { t } = useTranslations();
+
+  // Create schema with translations
+  const formSchema = useMemo(() => {
+    return insertContentSchema.extend({
+      title: z.string()
+        .refine(
+          (title) => {
+            const wordCount = countWords(title);
+            return wordCount >= 2 && wordCount <= 50;
+          },
+          { message: t('editor.validation.titleLength') }
+        ),
+      content: z.string()
+        .refine(
+          (content) => {
+            const wordCount = countWords(content);
+            return wordCount >= 50 && wordCount <= 500;
+          },
+          { message: t('editor.validation.contentLength') }
+        )
+    });
+  }, [t]); // Recreate schema when translation function changes
 
   const { data: content, isLoading: isLoadingContent } = useQuery<Content>({
     queryKey: id ? [`/api/contents/${id}`] : [],
@@ -95,14 +97,14 @@ export default function EditorPage() {
       }
       toast({
         title: t('common.success'),
-        description: "Content saved successfully",
+        description: t('editor.messages.saveSuccess'),
       });
       setLocation("/"); // Redirect to home page after successful save
     },
     onError: (error: Error) => {
       toast({
         title: t('common.error'),
-        description: error.message || "Please try again later",
+        description: error.message || t('editor.messages.tryAgain'),
         variant: "destructive",
       });
     },
@@ -122,7 +124,7 @@ export default function EditorPage() {
     onError: (error: Error) => {
       toast({
         title: t('common.error'),
-        description: error.message || "Please try again later",
+        description: error.message || t('editor.messages.factCheckError'),
         variant: "destructive",
       });
     },
@@ -187,7 +189,6 @@ export default function EditorPage() {
                       <Editor
                         value={field.value}
                         onChange={field.onChange}
-                        placeholder={t('editor.contentPlaceholder')}
                       />
                     </FormControl>
                     <FormMessage />

@@ -57,7 +57,17 @@ export default {
     titleLabel: "ಶೀರ್ಷಿಕೆ",
     contentLabel: "ವಿಷಯ",
     wordCount: "ಪದಗಳ ಸಂಖ್ಯೆ: {count}",
-    wordsRequired: "ಪದಗಳು ಅಗತ್ಯವಿದೆ"
+    wordsRequired: "ಪದಗಳು ಅಗತ್ಯವಿದೆ",
+    validation: {
+      titleLength: "ಶೀರ್ಷಿಕೆ 2 ರಿಂದ 50 ಪದಗಳ ನಡುವೆ ಇರಬೇಕು",
+      contentLength: "ವಿಷಯವು 50 ರಿಂದ 500 ಪದಗಳ ನಡುವೆ ಇರಬೇಕು",
+    },
+    messages: {
+      saveSuccess: "ವಿಷಯವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ",
+      saveError: "ವಿಷಯ ಉಳಿಸುವಲ್ಲಿ ದೋಷ",
+      factCheckError: "ಸತ್ಯಾಂಶ ಪರಿಶೀಲನೆಯಲ್ಲಿ ದೋಷ",
+      tryAgain: "ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+    }
   },
   dashboard: {
     welcome: "ಸ್ವಾಗತ, {username}",

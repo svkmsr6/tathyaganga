@@ -57,7 +57,17 @@ export default {
     titleLabel: "শিরোনাম",
     contentLabel: "কন্টেন্ট",
     wordCount: "শব্দ সংখ্যা: {count}",
-    wordsRequired: "শব্দ প্রয়োজন"
+    wordsRequired: "শব্দ প্রয়োজন",
+    validation: {
+      titleLength: "শিরোনাম ২ থেকে ৫০ শব্দের মধ্যে হতে হবে",
+      contentLength: "কন্টেন্ট ৫০ থেকে ৫০০ শব্দের মধ্যে হতে হবে",
+    },
+    messages: {
+      saveSuccess: "কন্টেন্ট সফলভাবে সংরক্ষিত হয়েছে",
+      saveError: "কন্টেন্ট সংরক্ষণে ত্রুটি",
+      factCheckError: "তথ্য যাচাইয়ে ত্রুটি",
+      tryAgain: "অনুগ্রহ করে পরে আবার চেষ্টা করুন",
+    }
   },
   dashboard: {
     welcome: "স্বাগতম, {username}",

@@ -57,7 +57,17 @@ export default {
     titleLabel: "शीर्षक",
     contentLabel: "सामग्री",
     wordCount: "शब्द गणना: {count}",
-    wordsRequired: "शब्द आवश्यक"
+    wordsRequired: "शब्द आवश्यक",
+    validation: {
+      titleLength: "शीर्षक 2 से 50 शब्दों के बीच होना चाहिए",
+      contentLength: "सामग्री 50 से 500 शब्दों के बीच होनी चाहिए",
+    },
+    messages: {
+      saveSuccess: "सामग्री सफलतापूर्वक सहेजी गई",
+      saveError: "सामग्री सहेजने में त्रुटि",
+      factCheckError: "तथ्यों की जाँच में त्रुटि",
+      tryAgain: "कृपया बाद में पुनः प्रयास करें",
+    }
   },
   dashboard: {
     welcome: "स्वागत है, {username}",
