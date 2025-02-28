@@ -18,6 +18,8 @@ export function TranslationsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem('language', language);
+    // Force a re-render of all components using translations
+    window.dispatchEvent(new Event('languagechange'));
   }, [language]);
 
   const t = (key: string) => getTranslation(language, key);
@@ -34,5 +36,18 @@ export function useTranslations() {
   if (!context) {
     throw new Error('useTranslations must be used within a TranslationsProvider');
   }
+
+  // Force component to re-render when language changes
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      // This will trigger a re-render
+      setState(prev => !prev);
+    };
+    window.addEventListener('languagechange', handleLanguageChange);
+    return () => window.removeEventListener('languagechange', handleLanguageChange);
+  }, []);
+
+  const [state, setState] = useState(false); // Used only for triggering re-renders
+
   return context;
 }
