@@ -36,7 +36,8 @@ export default {
     appName: "তথ্যগঙ্গা",
     logo: "তথ্যগঙ্গা লোগো",
     delete: "মুছে ফেলুন",
-    cancel: "বাতিল"
+    cancel: "বাতিল",
+    back: "পিছনে"
   },
   nav: {
     dashboard: "ড্যাশবোর্ড",
@@ -52,7 +53,11 @@ export default {
     publishButton: "প্রকাশ করুন",
     factCheck: "তথ্য যাচাই",
     contentPlaceholder: "এখানে আপনার কন্টেন্ট লেখা শুরু করুন...",
-    titlePlaceholder: "শিরোনাম লিখুন..."
+    titlePlaceholder: "শিরোনাম লিখুন...",
+    titleLabel: "শিরোনাম",
+    contentLabel: "কন্টেন্ট",
+    wordCount: "শব্দ সংখ্যা: {count}",
+    wordsRequired: "শব্দ প্রয়োজন"
   },
   dashboard: {
     welcome: "স্বাগতম, {username}",

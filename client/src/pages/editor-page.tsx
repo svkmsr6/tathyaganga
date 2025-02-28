@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import Editor from "@/components/editor";
 import { useEffect } from "react";
 import { z } from "zod";
+import { useTranslations } from "@/hooks/use-translations";
 
 // Helper function to count words
 function countWords(text: string): number {
@@ -45,6 +46,7 @@ export default function EditorPage() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { t } = useTranslations();
 
   const { data: content, isLoading: isLoadingContent } = useQuery<Content>({
     queryKey: id ? [`/api/contents/${id}`] : [],
@@ -92,14 +94,14 @@ export default function EditorPage() {
         queryClient.invalidateQueries({ queryKey: [`/api/contents/${id}`] });
       }
       toast({
-        title: "Success",
+        title: t('common.success'),
         description: "Content saved successfully",
       });
       setLocation("/"); // Redirect to home page after successful save
     },
     onError: (error: Error) => {
       toast({
-        title: "Error saving content",
+        title: t('common.error'),
         description: error.message || "Please try again later",
         variant: "destructive",
       });
@@ -113,13 +115,13 @@ export default function EditorPage() {
     },
     onSuccess: (data) => {
       toast({
-        title: `Fact Check Score: ${data.score}`,
+        title: `${t('editor.factCheck')} ${t('dashboard.factCheckScore', { score: data.score })}`,
         description: data.explanation,
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Error checking facts",
+        title: t('common.error'),
         description: error.message || "Please try again later",
         variant: "destructive",
       });
@@ -148,10 +150,10 @@ export default function EditorPage() {
         <div className="flex items-center gap-4 mb-8">
           <Button variant="outline" onClick={() => setLocation("/")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            {t('common.back')}
           </Button>
           <h1 className="text-3xl font-bold">
-            {id ? "Edit Content" : "New Content"}
+            {id ? t('editor.editTitle') : t('editor.newTitle')}
           </h1>
         </div>
 
@@ -163,13 +165,13 @@ export default function EditorPage() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>{t('editor.titleLabel')}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input placeholder={t('editor.titlePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                     <p className="text-xs text-muted-foreground">
-                      Word count: {countWords(field.value)} (2-50 words required)
+                      {t('editor.wordCount', { count: countWords(field.value) })} (2-50 {t('editor.wordsRequired')})
                     </p>
                   </FormItem>
                 )}
@@ -180,16 +182,17 @@ export default function EditorPage() {
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Content</FormLabel>
+                    <FormLabel>{t('editor.contentLabel')}</FormLabel>
                     <FormControl>
                       <Editor
                         value={field.value}
                         onChange={field.onChange}
+                        placeholder={t('editor.contentPlaceholder')}
                       />
                     </FormControl>
                     <FormMessage />
                     <p className="text-xs text-muted-foreground">
-                      Word count: {countWords(field.value)} (50-500 words required)
+                      {t('editor.wordCount', { count: countWords(field.value) })} (50-500 {t('editor.wordsRequired')})
                     </p>
                   </FormItem>
                 )}
@@ -208,7 +211,7 @@ export default function EditorPage() {
                   {factCheckMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : null}
-                  Fact Check
+                  {t('editor.factCheck')}
                 </Button>
 
                 <Button type="submit" disabled={!isValid || saveMutation.isPending}>
@@ -217,7 +220,7 @@ export default function EditorPage() {
                   ) : (
                     <Save className="h-4 w-4 mr-2" />
                   )}
-                  Save
+                  {t('editor.saveButton')}
                 </Button>
               </div>
             </form>

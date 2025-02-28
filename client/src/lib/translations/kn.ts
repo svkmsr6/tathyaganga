@@ -36,7 +36,8 @@ export default {
     appName: "ತಥ್ಯಗಂಗಾ",
     logo: "ತಥ್ಯಗಂಗಾ ಲೋಗೋ",
     delete: "ಅಳಿಸಿ",
-    cancel: "ರದ್ದುಮಾಡಿ"
+    cancel: "ರದ್ದುಮಾಡಿ",
+    back: "ಹಿಂದೆ"
   },
   nav: {
     dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
@@ -52,7 +53,11 @@ export default {
     publishButton: "ಪ್ರಕಟಿಸಿ",
     factCheck: "ಸತ್ಯಾಂಶ ಪರಿಶೀಲನೆ",
     contentPlaceholder: "ಇಲ್ಲಿ ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬರೆಯಲು ಪ್ರಾರಂಭಿಸಿ...",
-    titlePlaceholder: "ಶೀರ್ಷಿಕೆ ನಮೂದಿಸಿ..."
+    titlePlaceholder: "ಶೀರ್ಷಿಕೆ ನಮೂದಿಸಿ...",
+    titleLabel: "ಶೀರ್ಷಿಕೆ",
+    contentLabel: "ವಿಷಯ",
+    wordCount: "ಪದಗಳ ಸಂಖ್ಯೆ: {count}",
+    wordsRequired: "ಪದಗಳು ಅಗತ್ಯವಿದೆ"
   },
   dashboard: {
     welcome: "ಸ್ವಾಗತ, {username}",

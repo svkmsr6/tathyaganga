@@ -36,7 +36,8 @@ export default {
     appName: "Tathyaganga",
     logo: "Tathyaganga Logo",
     delete: "Delete",
-    cancel: "Cancel"
+    cancel: "Cancel",
+    back: "Back"
   },
   nav: {
     dashboard: "Dashboard",
@@ -52,7 +53,11 @@ export default {
     publishButton: "Publish",
     factCheck: "Fact Check",
     contentPlaceholder: "Start writing your content here...",
-    titlePlaceholder: "Enter title..."
+    titlePlaceholder: "Enter title...",
+    titleLabel: "Title",
+    contentLabel: "Content",
+    wordCount: "Word count: {count}",
+    wordsRequired: "words required"
   },
   dashboard: {
     welcome: "Welcome, {username}",

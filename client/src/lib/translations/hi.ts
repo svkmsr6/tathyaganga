@@ -36,7 +36,8 @@ export default {
     appName: "तथ्यगंगा",
     logo: "तथ्यगंगा लोगो",
     delete: "हटाएं",
-    cancel: "रद्द करें"
+    cancel: "रद्द करें",
+    back: "वापस"
   },
   nav: {
     dashboard: "डैशबोर्ड",
@@ -52,7 +53,11 @@ export default {
     publishButton: "प्रकाशित करें",
     factCheck: "तथ्य जाँच",
     contentPlaceholder: "यहाँ अपनी सामग्री लिखना शुरू करें...",
-    titlePlaceholder: "शीर्षक दर्ज करें..."
+    titlePlaceholder: "शीर्षक दर्ज करें...",
+    titleLabel: "शीर्षक",
+    contentLabel: "सामग्री",
+    wordCount: "शब्द गणना: {count}",
+    wordsRequired: "शब्द आवश्यक"
   },
   dashboard: {
     welcome: "स्वागत है, {username}",
