@@ -1,6 +1,7 @@
 // English translations
 export default {
   auth: {
+    welcome: "Welcome to Tathyaganga",
     login: {
       title: "Login Failed",
       errorMessage: "The username or password you entered is incorrect. Please verify your credentials and try again.",
@@ -19,11 +20,18 @@ export default {
       registerButton: "Register",
       usernameHint: "5-20 characters, must start with a letter, can contain letters, numbers, and underscores",
       passwordHint: "8-100 characters, must include uppercase letter, number, and special character",
+    },
+    hero: {
+      title: "Create Content with Confidence",
+      description: "Tathyaganga combines AI-powered fact-checking with professional content creation tools to help you produce accurate, engaging content."
     }
   },
   common: {
     loading: "Loading...",
     error: "Error",
     success: "Success",
+    settings: "Settings",
+    darkMode: "Dark Mode",
+    language: "Display Language"
   }
 };

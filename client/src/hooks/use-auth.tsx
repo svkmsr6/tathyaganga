@@ -7,6 +7,7 @@ import {
 import { insertUserSchema, User as SelectUser, InsertUser } from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "@/hooks/use-translations";
 
 type AuthContextType = {
   user: SelectUser | null;
@@ -22,6 +23,8 @@ type LoginData = Pick<InsertUser, "username" | "password">;
 export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const { t } = useTranslations();
+
   const {
     data: user,
     error,
@@ -43,14 +46,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
       toast({
-        title: "Welcome back!",
-        description: "Successfully logged in to your account.",
+        title: t('auth.login.success'),
+        description: t('auth.login.successMessage'),
       });
     },
     onError: () => {
       toast({
-        title: "Unable to Log In",
-        description: "The username or password you entered is incorrect. Please verify your credentials and try again.",
+        title: t('auth.login.title'),
+        description: t('auth.login.errorMessage'),
         variant: "destructive",
       });
     },
@@ -61,20 +64,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/register", credentials);
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message); // Keep detailed messages for registration
+        throw new Error(data.message);
       }
       return await res.json();
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
       toast({
-        title: "Welcome to Tathyaganga!",
-        description: "Your account has been created successfully.",
+        title: t('auth.register.success'),
+        description: t('auth.register.successMessage'),
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Registration Failed",
+        title: t('auth.register.title'),
         description: error.message,
         variant: "destructive",
       });
@@ -90,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onError: (error: Error) => {
       toast({
-        title: "Logout failed",
+        title: t('common.error'),
         description: error.message,
         variant: "destructive",
       });

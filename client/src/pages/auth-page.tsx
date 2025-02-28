@@ -11,10 +11,12 @@ import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [, setLocation] = useLocation();
+  const { t } = useTranslations();
 
   // Redirect if already authenticated
   if (user) {
@@ -29,14 +31,14 @@ export default function AuthPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center">
-              Welcome to Tathyaganga
+              {t('auth.welcome')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="space-y-4">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+                <TabsTrigger value="login">{t('auth.form.loginButton')}</TabsTrigger>
+                <TabsTrigger value="register">{t('auth.form.registerButton')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
@@ -59,10 +61,10 @@ export default function AuthPage() {
         <div className="w-full h-full flex items-center justify-center bg-black bg-opacity-50 p-12">
           <div className="max-w-lg text-white">
             <h1 className="text-4xl font-bold mb-4">
-              Create Content with Confidence
+              {t('auth.hero.title')}
             </h1>
             <p className="text-lg opacity-90">
-              Tathyaganga combines AI-powered fact-checking with professional content creation tools to help you produce accurate, engaging content.
+              {t('auth.hero.description')}
             </p>
           </div>
         </div>
@@ -74,6 +76,8 @@ export default function AuthPage() {
 function LoginForm() {
   const { loginMutation } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslations();
+
   const form = useForm({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
@@ -86,8 +90,8 @@ function LoginForm() {
     try {
       await loginMutation.mutateAsync(values);
       toast({
-        title: "Welcome back!",
-        description: "Successfully logged in to your account.",
+        title: t('auth.login.success'),
+        description: t('auth.login.successMessage'),
       });
     } catch (error) {
       // Error is already handled by the mutation
@@ -102,7 +106,7 @@ function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>{t('auth.form.username')}</FormLabel>
               <FormControl>
                 <Input {...field} autoComplete="username" />
               </FormControl>
@@ -115,7 +119,7 @@ function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.form.password')}</FormLabel>
               <FormControl>
                 <Input type="password" {...field} autoComplete="current-password" />
               </FormControl>
@@ -127,7 +131,7 @@ function LoginForm() {
           {loginMutation.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            "Login"
+            t('auth.form.loginButton')
           )}
         </Button>
       </form>
@@ -138,6 +142,8 @@ function LoginForm() {
 function RegisterForm() {
   const { registerMutation } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslations();
+
   const form = useForm({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
@@ -151,8 +157,8 @@ function RegisterForm() {
     try {
       await registerMutation.mutateAsync(values);
       toast({
-        title: "Welcome to Tathyaganga!",
-        description: "Your account has been created successfully.",
+        title: t('auth.register.success'),
+        description: t('auth.register.successMessage'),
       });
     } catch (error) {
       // Error is already handled by the mutation
@@ -167,13 +173,13 @@ function RegisterForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>{t('auth.form.username')}</FormLabel>
               <FormControl>
                 <Input {...field} autoComplete="username" />
               </FormControl>
               <FormMessage />
               <p className="text-xs text-muted-foreground">
-                5-20 characters, must start with a letter, can contain letters, numbers, and underscores
+                {t('auth.form.usernameHint')}
               </p>
             </FormItem>
           )}
@@ -183,13 +189,13 @@ function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.form.password')}</FormLabel>
               <FormControl>
                 <Input type="password" {...field} autoComplete="new-password" />
               </FormControl>
               <FormMessage />
               <p className="text-xs text-muted-foreground">
-                8-100 characters, must include uppercase letter, number, and special character
+                {t('auth.form.passwordHint')}
               </p>
             </FormItem>
           )}
@@ -198,7 +204,7 @@ function RegisterForm() {
           {registerMutation.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            "Register"
+            t('auth.form.registerButton')
           )}
         </Button>
       </form>
