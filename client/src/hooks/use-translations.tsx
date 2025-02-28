@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { Language, translations, getTranslation } from '@/lib/translations';
 
 type TranslationsContextType = {
@@ -10,31 +10,24 @@ type TranslationsContextType = {
 const TranslationsContext = createContext<TranslationsContextType | null>(null);
 
 export function TranslationsProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
+  const [language, setLanguageInternal] = useState<Language>(() => {
     const stored = localStorage.getItem('language') as Language;
     return stored && translations[stored] ? stored : 'en';
   });
 
-  // Memoize the translation function to prevent unnecessary re-renders
-  const t = useMemo(() => 
-    (key: string) => getTranslation(language, key),
-    [language]
-  );
-
-  const setLanguage = (newLang: Language) => {
-    setLanguageState(newLang);
-    localStorage.setItem('language', newLang);
+  const value = {
+    language,
+    setLanguage: (newLang: Language) => {
+      setLanguageInternal(newLang);
+      localStorage.setItem('language', newLang);
+      // Force a re-render of all components using translations
+      document.documentElement.setAttribute('lang', newLang);
+    },
+    t: (key: string) => getTranslation(language, key),
   };
 
-  // Memoize the context value to prevent unnecessary re-renders
-  const contextValue = useMemo(() => ({
-    language,
-    setLanguage,
-    t,
-  }), [language, t]);
-
   return (
-    <TranslationsContext.Provider value={contextValue}>
+    <TranslationsContext.Provider value={value}>
       {children}
     </TranslationsContext.Provider>
   );

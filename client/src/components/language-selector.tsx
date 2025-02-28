@@ -5,8 +5,12 @@ import { useTranslations } from "@/hooks/use-translations";
 export function LanguageSelector() {
   const { language, setLanguage } = useTranslations();
 
+  const handleLanguageChange = (value: string) => {
+    setLanguage(value as Language);
+  };
+
   return (
-    <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
+    <Select value={language} onValueChange={handleLanguageChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select Language" />
       </SelectTrigger>
