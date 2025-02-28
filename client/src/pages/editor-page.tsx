@@ -11,9 +11,18 @@ import { Loader2, Save, ArrowLeft } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Editor from "@/components/editor";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { useTranslations } from "@/hooks/use-translations";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 // Helper function to count words
 function countWords(text: string): number {
@@ -27,6 +36,8 @@ export default function EditorPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { t } = useTranslations();
+  const [isFactCheckDialogOpen, setIsFactCheckDialogOpen] = useState(false);
+  const [factCheckResult, setFactCheckResult] = useState<{ score: number; explanation: string } | null>(null);
 
   // Create schema with translations
   const formSchema = useMemo(() => {
@@ -116,10 +127,8 @@ export default function EditorPage() {
       return await res.json();
     },
     onSuccess: (data) => {
-      toast({
-        title: `${t('editor.factCheck')} ${t('dashboard.factCheckScore', { score: data.score })}`,
-        description: data.explanation,
-      });
+      setFactCheckResult(data);
+      setIsFactCheckDialogOpen(true);
     },
     onError: (error: Error) => {
       toast({
@@ -226,6 +235,21 @@ export default function EditorPage() {
               </div>
             </form>
           </Form>
+          <AlertDialog open={isFactCheckDialogOpen} onOpenChange={setIsFactCheckDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {t('editor.factCheck')} {factCheckResult && t('dashboard.factCheckScore', { score: factCheckResult.score })}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {factCheckResult?.explanation}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </Card>
       </main>
     </div>
