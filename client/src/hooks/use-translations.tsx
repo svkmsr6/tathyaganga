@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode, useMemo } from 'react';
 import { Language, translations, getTranslation } from '@/lib/translations';
 
 type TranslationsContextType = {
@@ -10,25 +10,24 @@ type TranslationsContextType = {
 const TranslationsContext = createContext<TranslationsContextType | null>(null);
 
 export function TranslationsProvider({ children }: { children: ReactNode }) {
-  // Use a tuple to force re-renders when language changes
-  const [state, setState] = useState<[Language, number]>(() => {
+  // Simple state management that will trigger re-renders
+  const [language, setLanguageInternal] = useState<Language>(() => {
     const stored = localStorage.getItem('language') as Language;
-    return [stored && translations[stored] ? stored : 'en', 0];
+    return stored && translations[stored] ? stored : 'en';
   });
 
-  const [language] = state;
-
+  // Ensure setLanguage always has the same reference
   const setLanguage = useCallback((newLang: Language) => {
     localStorage.setItem('language', newLang);
-    // Increment the counter to force a re-render
-    setState([newLang, state[1] + 1]);
-  }, [state]);
+    setLanguageInternal(newLang);
+  }, []);
 
-  const value = {
+  // Create a new context value every time language changes
+  const value = useMemo(() => ({
     language,
     setLanguage,
-    t: useCallback((key: string) => getTranslation(language, key), [language]),
-  };
+    t: (key: string) => getTranslation(language, key),
+  }), [language, setLanguage]);
 
   return (
     <TranslationsContext.Provider value={value}>
