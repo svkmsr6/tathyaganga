@@ -4,29 +4,26 @@ import { Language, translations, getTranslation } from '@/lib/translations';
 type TranslationsContextType = {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, values?: Record<string, any>) => string;
 };
 
 const TranslationsContext = createContext<TranslationsContextType | null>(null);
 
 export function TranslationsProvider({ children }: { children: ReactNode }) {
-  // Simple state management that will trigger re-renders
   const [language, setLanguageInternal] = useState<Language>(() => {
     const stored = localStorage.getItem('language') as Language;
     return stored && translations[stored] ? stored : 'en';
   });
 
-  // Ensure setLanguage always has the same reference
   const setLanguage = useCallback((newLang: Language) => {
     localStorage.setItem('language', newLang);
     setLanguageInternal(newLang);
   }, []);
 
-  // Create a new context value every time language changes
   const value = useMemo(() => ({
     language,
     setLanguage,
-    t: (key: string) => getTranslation(language, key),
+    t: (key: string, values?: Record<string, any>) => getTranslation(language, key, values),
   }), [language, setLanguage]);
 
   return (

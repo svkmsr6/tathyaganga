@@ -20,7 +20,7 @@ export const languageNames = {
   kn: "ಕನ್ನಡ",
 } as const;
 
-export function getTranslation(lang: Language, key: string): string {
+export function getTranslation(lang: Language, key: string, values?: Record<string, any>): string {
   try {
     const keys = key.split('.');
     let current: any = translations[lang];
@@ -36,9 +36,16 @@ export function getTranslation(lang: Language, key: string): string {
           }
           current = current[fallbackKey];
         }
-        return current;
+        break;
       }
       current = current[k];
+    }
+
+    // If we have values to interpolate
+    if (values && typeof current === 'string') {
+      return current.replace(/\{(\w+)\}/g, (match, key) => {
+        return values[key]?.toString() ?? match;
+      });
     }
 
     return current;
