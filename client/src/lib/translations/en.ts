@@ -34,7 +34,9 @@ export default {
     darkMode: "Dark Mode",
     language: "Display Language",
     appName: "Tathyaganga",
-    logo: "Tathyaganga Logo"
+    logo: "Tathyaganga Logo",
+    delete: "Delete",
+    cancel: "Cancel"
   },
   nav: {
     dashboard: "Dashboard",
@@ -51,5 +53,15 @@ export default {
     factCheck: "Fact Check",
     contentPlaceholder: "Start writing your content here...",
     titlePlaceholder: "Enter title..."
+  },
+  dashboard: {
+    welcome: "Welcome, {username}",
+    noContent: "No content yet",
+    createFirstContent: "Create your first piece of content to get started",
+    createContent: "Create Content",
+    deleteTitle: "Delete Content",
+    deleteConfirm: 'Are you sure you want to delete "{title}"? This action cannot be undone.',
+    deleteSuccess: "Content deleted successfully",
+    factCheckScore: "Score: {score}"
   }
 };

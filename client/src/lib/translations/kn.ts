@@ -34,7 +34,9 @@ export default {
     darkMode: "ಡಾರ್ಕ್ ಮೋಡ್",
     language: "ಪ್ರದರ್ಶನ ಭಾಷೆ",
     appName: "ತಥ್ಯಗಂಗಾ",
-    logo: "ತಥ್ಯಗಂಗಾ ಲೋಗೋ"
+    logo: "ತಥ್ಯಗಂಗಾ ಲೋಗೋ",
+    delete: "ಅಳಿಸಿ",
+    cancel: "ರದ್ದುಮಾಡಿ"
   },
   nav: {
     dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
@@ -51,5 +53,15 @@ export default {
     factCheck: "ಸತ್ಯಾಂಶ ಪರಿಶೀಲನೆ",
     contentPlaceholder: "ಇಲ್ಲಿ ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬರೆಯಲು ಪ್ರಾರಂಭಿಸಿ...",
     titlePlaceholder: "ಶೀರ್ಷಿಕೆ ನಮೂದಿಸಿ..."
+  },
+  dashboard: {
+    welcome: "ಸ್ವಾಗತ, {username}",
+    noContent: "ಇನ್ನೂ ಯಾವುದೇ ವಿಷಯವಿಲ್ಲ",
+    createFirstContent: "ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಮೊದಲ ವಿಷಯವನ್ನು ರಚಿಸಿ",
+    createContent: "ವಿಷಯ ರಚಿಸಿ",
+    deleteTitle: "ವಿಷಯ ಅಳಿಸಿ",
+    deleteConfirm: 'ನೀವು ಖಚಿತವಾಗಿ "{title}" ಅನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.',
+    deleteSuccess: "ವಿಷಯವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ",
+    factCheckScore: "ಅಂಕ: {score}"
   }
 };

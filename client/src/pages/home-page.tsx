@@ -19,10 +19,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function HomePage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslations();
+
   const { data: contents, isLoading } = useQuery<Content[]>({
     queryKey: ["/api/contents"],
   });
@@ -34,8 +37,8 @@ export default function HomePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/contents"] });
       toast({
-        title: "Success",
-        description: "Content deleted successfully",
+        title: t('common.success'),
+        description: t('dashboard.deleteSuccess'),
       });
     },
   });
@@ -44,11 +47,13 @@ export default function HomePage() {
     <div className="min-h-screen pt-16">
       <main className="p-8">
         <div className="flex flex-col items-center mb-8">
-          <h1 className="text-3xl font-bold text-center mb-4">Welcome, {user?.username}</h1>
+          <h1 className="text-3xl font-bold text-center mb-4">
+            {t('dashboard.welcome', { username: user?.username })}
+          </h1>
           <Link href="/editor">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              New Content
+              {t('nav.newContent')}
             </Button>
           </Link>
         </div>
@@ -61,12 +66,12 @@ export default function HomePage() {
           <Card className="max-w-2xl mx-auto">
             <CardContent className="flex flex-col items-center justify-center p-12 text-center">
               <File className="h-12 w-12 mb-4 text-muted-foreground" />
-              <h2 className="text-xl font-semibold mb-2">No content yet</h2>
+              <h2 className="text-xl font-semibold mb-2">{t('dashboard.noContent')}</h2>
               <p className="text-muted-foreground mb-4">
-                Create your first piece of content to get started
+                {t('dashboard.createFirstContent')}
               </p>
               <Link href="/editor">
-                <Button>Create Content</Button>
+                <Button>{t('dashboard.createContent')}</Button>
               </Link>
             </CardContent>
           </Card>
@@ -87,13 +92,13 @@ export default function HomePage() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Content</AlertDialogTitle>
+                        <AlertDialogTitle>{t('dashboard.deleteTitle')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete "{content.title}"? This action cannot be undone.
+                          {t('dashboard.deleteConfirm', { title: content.title })}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => deleteMutation.mutate(content.id)}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -101,7 +106,7 @@ export default function HomePage() {
                           {deleteMutation.isPending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
-                            "Delete"
+                            t('common.delete')
                           )}
                         </AlertDialogAction>
                       </AlertDialogFooter>
@@ -119,7 +124,7 @@ export default function HomePage() {
                     {content.factCheckScore !== null && (
                       <div className="flex items-center mt-4 gap-1 text-sm">
                         <AlertCircle className="h-4 w-4" />
-                        Score: {content.factCheckScore}
+                        {t('dashboard.factCheckScore', { score: content.factCheckScore })}
                       </div>
                     )}
                   </CardContent>

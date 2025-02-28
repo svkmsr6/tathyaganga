@@ -34,7 +34,9 @@ export default {
     darkMode: "ডার্ক মোড",
     language: "প্রদর্শনের ভাষা",
     appName: "তথ্যগঙ্গা",
-    logo: "তথ্যগঙ্গা লোগো"
+    logo: "তথ্যগঙ্গা লোগো",
+    delete: "মুছে ফেলুন",
+    cancel: "বাতিল"
   },
   nav: {
     dashboard: "ড্যাশবোর্ড",
@@ -51,5 +53,15 @@ export default {
     factCheck: "তথ্য যাচাই",
     contentPlaceholder: "এখানে আপনার কন্টেন্ট লেখা শুরু করুন...",
     titlePlaceholder: "শিরোনাম লিখুন..."
+  },
+  dashboard: {
+    welcome: "স্বাগতম, {username}",
+    noContent: "এখনও কোনও কন্টেন্ট নেই",
+    createFirstContent: "শুরু করার জন্য আপনার প্রথম কন্টেন্ট তৈরি করুন",
+    createContent: "কন্টেন্ট তৈরি করুন",
+    deleteTitle: "কন্টেন্ট মুছুন",
+    deleteConfirm: 'আপনি কি নিশ্চিত যে আপনি "{title}" মুছে ফেলতে চান? এই ক্রিয়া পূর্বাবস্থায় ফেরানো যাবে না।',
+    deleteSuccess: "কন্টেন্ট সফলভাবে মুছে ফেলা হয়েছে",
+    factCheckScore: "স্কোর: {score}"
   }
 };

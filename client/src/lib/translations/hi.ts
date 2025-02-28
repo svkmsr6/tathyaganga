@@ -34,7 +34,9 @@ export default {
     darkMode: "डार्क मोड",
     language: "प्रदर्शन भाषा",
     appName: "तथ्यगंगा",
-    logo: "तथ्यगंगा लोगो"
+    logo: "तथ्यगंगा लोगो",
+    delete: "हटाएं",
+    cancel: "रद्द करें"
   },
   nav: {
     dashboard: "डैशबोर्ड",
@@ -51,5 +53,15 @@ export default {
     factCheck: "तथ्य जाँच",
     contentPlaceholder: "यहाँ अपनी सामग्री लिखना शुरू करें...",
     titlePlaceholder: "शीर्षक दर्ज करें..."
+  },
+  dashboard: {
+    welcome: "स्वागत है, {username}",
+    noContent: "अभी तक कोई सामग्री नहीं",
+    createFirstContent: "शुरू करने के लिए अपनी पहली सामग्री बनाएं",
+    createContent: "सामग्री बनाएं",
+    deleteTitle: "सामग्री हटाएं",
+    deleteConfirm: 'क्या आप वाकई "{title}" को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।',
+    deleteSuccess: "सामग्री सफलतापूर्वक हटाई गई",
+    factCheckScore: "स्कोर: {score}"
   }
 };
