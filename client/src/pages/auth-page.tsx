@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "@/hooks/use-translations";
+import { LanguageSelector } from "@/components/language-selector";
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
@@ -29,10 +30,13 @@ export default function AuthPage() {
       {/* Form Section */}
       <div className="flex-1 flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">
-              {t('auth.welcome')}
-            </CardTitle>
+          <CardHeader className="space-y-4">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-2xl font-bold">
+                {t('auth.welcome')}
+              </CardTitle>
+              <LanguageSelector />
+            </div>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="space-y-4">
