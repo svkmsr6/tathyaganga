@@ -20,17 +20,30 @@ export const languageNames = {
   kn: "ಕನ್ನಡ",
 } as const;
 
-export function getTranslation(lang: Language, key: string) {
-  const keys = key.split('.');
-  let current: any = translations[lang];
-  
-  for (const k of keys) {
-    if (current[k] === undefined) {
-      console.warn(`Translation missing for key: ${key} in language: ${lang}`);
-      return translations.en[k] || key;
+export function getTranslation(lang: Language, key: string): string {
+  try {
+    const keys = key.split('.');
+    let current: any = translations[lang];
+
+    for (const k of keys) {
+      if (current[k] === undefined) {
+        console.warn(`Translation missing for key: ${key} in language: ${lang}`);
+        // Fallback to English
+        current = translations.en;
+        for (const fallbackKey of keys) {
+          if (current[fallbackKey] === undefined) {
+            return key; // Return the key itself if translation missing in English
+          }
+          current = current[fallbackKey];
+        }
+        return current;
+      }
+      current = current[k];
     }
-    current = current[k];
+
+    return current;
+  } catch (error) {
+    console.error(`Error getting translation for key: ${key} in language: ${lang}`, error);
+    return key;
   }
-  
-  return current;
 }
