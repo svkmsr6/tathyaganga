@@ -127,6 +127,10 @@ export default function EditorPage() {
         content,
         language // Use the current language from translations context
       });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message);
+      }
       return await res.json();
     },
     onSuccess: (data) => {
@@ -134,9 +138,18 @@ export default function EditorPage() {
       setIsFactCheckDialogOpen(true);
     },
     onError: (error: Error) => {
+      let errorMessage = t('editor.messages.factCheckError');
+
+      // Check for specific error types and provide appropriate translated messages
+      if (error.message.includes('network') || error.message.includes('failed to fetch')) {
+        errorMessage = t('editor.messages.factCheckNetworkError');
+      } else if (error.message.includes('service') || error.message.includes('unavailable')) {
+        errorMessage = t('editor.messages.factCheckServiceError');
+      }
+
       toast({
         title: t('common.error'),
-        description: error.message || t('editor.messages.factCheckError'),
+        description: errorMessage,
         variant: "destructive",
       });
     },

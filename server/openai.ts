@@ -28,10 +28,17 @@ async function translateText(text: string, targetLanguage: string): Promise<stri
       ]
     });
 
-    return response.choices[0].message.content;
-  } catch (error) {
+    const translatedText = response.choices[0].message.content;
+    if (!translatedText) {
+      throw new Error("service unavailable");
+    }
+    return translatedText;
+  } catch (error: any) {
     console.error("Translation error:", error);
-    throw new Error("Failed to translate text: " + error.message);
+    if (error.message?.includes('network') || error.message?.includes('timeout')) {
+      throw new Error("network error");
+    }
+    throw new Error("service unavailable");
   }
 }
 
@@ -53,30 +60,44 @@ export async function factCheck(content: string, language: string = 'en'): Promi
       response_format: { type: "json_object" }
     });
 
-    const result = JSON.parse(response.choices[0].message.content);
+    const result = JSON.parse(response.choices[0].message.content || '{}');
+    if (!result.score || !result.explanation) {
+      throw new Error("service unavailable");
+    }
+
     const factCheckResult = {
       score: Math.min(100, Math.max(0, result.score)),
       explanation: result.explanation,
-      suggestions: result.suggestions,
+      suggestions: result.suggestions || [],
     };
 
     // If language is not English, translate the explanation and suggestions
     if (language !== 'en') {
-      const translatedExplanation = await translateText(factCheckResult.explanation, language);
-      const translatedSuggestions = await Promise.all(
-        factCheckResult.suggestions.map(suggestion => translateText(suggestion, language))
-      );
+      try {
+        const translatedExplanation = await translateText(factCheckResult.explanation, language);
+        const translatedSuggestions = await Promise.all(
+          factCheckResult.suggestions.map(suggestion => translateText(suggestion, language))
+        );
 
-      return {
-        ...factCheckResult,
-        explanation: translatedExplanation,
-        suggestions: translatedSuggestions,
-      };
+        return {
+          ...factCheckResult,
+          explanation: translatedExplanation,
+          suggestions: translatedSuggestions,
+        };
+      } catch (error: any) {
+        // If translation fails, return the English result with a note about translation failure
+        console.error("Translation failed:", error);
+        return factCheckResult;
+      }
     }
 
     return factCheckResult;
-  } catch (error) {
-    throw new Error("Failed to perform fact check: " + error.message);
+  } catch (error: any) {
+    console.error("Fact check error:", error);
+    if (error.message?.includes('network') || error.message?.includes('timeout')) {
+      throw new Error("network error");
+    }
+    throw new Error("service unavailable");
   }
 }
 

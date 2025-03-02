@@ -67,6 +67,8 @@ export default {
       saveError: "Error saving content",
       factCheckError: "Error checking facts",
       tryAgain: "Please try again later",
+      factCheckServiceError: "Our fact-checking service is currently unavailable. Please try again in a few minutes.",
+      factCheckNetworkError: "Network error while fact-checking. Please check your connection and try again."
     }
   },
   dashboard: {
