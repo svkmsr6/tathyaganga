@@ -24,6 +24,8 @@ async function translateText(text: string, targetLanguage: string): Promise<stri
     // Map the language code to full language name
     const languageName = languageMap[targetLanguage as keyof typeof languageMap] || targetLanguage;
 
+    console.log(`Attempting to translate text to ${languageName}`);
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -40,12 +42,15 @@ async function translateText(text: string, targetLanguage: string): Promise<stri
 
     const translatedText = response.choices[0].message.content;
     if (!translatedText) {
+      console.error("Translation returned empty response");
       throw new Error("service unavailable");
     }
+
+    console.log(`Successfully translated text to ${languageName}`);
     return translatedText;
   } catch (error: any) {
-    console.error("Translation error:", error);
-    if (error.message?.includes('network') || error.message?.includes('timeout')) {
+    console.error(`Translation error for language ${targetLanguage}:`, error);
+    if (error.code === 'ECONNREFUSED' || error.message?.includes('network') || error.message?.includes('timeout')) {
       throw new Error("network error");
     }
     throw new Error("service unavailable");
@@ -54,6 +59,8 @@ async function translateText(text: string, targetLanguage: string): Promise<stri
 
 export async function factCheck(content: string, language: string = 'en'): Promise<FactCheckResult> {
   try {
+    console.log(`Starting fact check in language: ${language}`);
+
     // First, get fact check results in English
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -72,6 +79,7 @@ export async function factCheck(content: string, language: string = 'en'): Promi
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
     if (!result.score || !result.explanation) {
+      console.error("Fact check returned invalid response:", result);
       throw new Error("service unavailable");
     }
 
@@ -81,13 +89,22 @@ export async function factCheck(content: string, language: string = 'en'): Promi
       suggestions: result.suggestions || [],
     };
 
-    // If language is not English, translate the explanation and suggestions
-    if (language !== 'en') {
+    // If language is not English, translate the response
+    if (language !== 'en' && languageMap[language as keyof typeof languageMap]) {
       try {
+        console.log(`Starting translation to ${language}`);
+
+        // Translate explanation
         const translatedExplanation = await translateText(factCheckResult.explanation, language);
+
+        // Translate suggestions
         const translatedSuggestions = await Promise.all(
-          factCheckResult.suggestions.map(suggestion => translateText(suggestion, language))
+          factCheckResult.suggestions.map(async (suggestion: string) => {
+            return await translateText(suggestion, language);
+          })
         );
+
+        console.log(`Successfully completed translation to ${language}`);
 
         return {
           ...factCheckResult,
@@ -95,16 +112,20 @@ export async function factCheck(content: string, language: string = 'en'): Promi
           suggestions: translatedSuggestions,
         };
       } catch (error: any) {
-        // If translation fails, return the English result with a note about translation failure
-        console.error("Translation failed:", error);
-        throw new Error("network error"); // Propagate error to trigger proper error handling
+        console.error(`Failed to translate fact check results to ${language}:`, error);
+        // Re-throw with appropriate error type
+        if (error.message === 'network error') {
+          throw new Error("network error");
+        }
+        throw new Error("service unavailable");
       }
     }
 
     return factCheckResult;
   } catch (error: any) {
     console.error("Fact check error:", error);
-    if (error.message?.includes('network') || error.message?.includes('timeout')) {
+    // Ensure consistent error messages
+    if (error.code === 'ECONNREFUSED' || error.message?.includes('network') || error.message?.includes('timeout')) {
       throw new Error("network error");
     }
     throw new Error("service unavailable");
