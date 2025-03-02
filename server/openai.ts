@@ -12,62 +12,40 @@ export interface FactCheckResult {
   suggestions: string[];
 }
 
-const languageMap = {
-  'hi': 'Hindi',
-  'bn': 'Bengali',
-  'kn': 'Kannada',
-  'en': 'English'
-};
-
-async function translateText(text: string, targetLanguage: string): Promise<string> {
-  try {
-    // Map the language code to full language name
-    const languageName = languageMap[targetLanguage as keyof typeof languageMap] || targetLanguage;
-
-    console.log(`Attempting to translate text to ${languageName}`);
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are a professional translator. Translate the following text to ${languageName} while maintaining the same tone and meaning. Return only the translated text without any additional context or explanation.`
-        },
-        {
-          role: "user",
-          content: text
-        }
-      ]
-    });
-
-    const translatedText = response.choices[0].message.content;
-    if (!translatedText) {
-      console.error("Translation returned empty response");
-      throw new Error("service unavailable");
-    }
-
-    console.log(`Successfully translated text to ${languageName}`);
-    return translatedText;
-  } catch (error: any) {
-    console.error(`Translation error for language ${targetLanguage}:`, error);
-    if (error.code === 'ECONNREFUSED' || error.message?.includes('network') || error.message?.includes('timeout')) {
-      throw new Error("network error");
-    }
-    throw new Error("service unavailable");
+const languagePrompts = {
+  'en': {
+    system: "You are a fact-checking expert. Analyze the given content for factual accuracy and provide a score from 0-100, explanation, and suggestions for improvement. Return the results in JSON format with 'score', 'explanation', and 'suggestions' fields.",
+    language: "English"
+  },
+  'hi': {
+    system: "आप एक तथ्य-जांच विशेषज्ञ हैं। दिए गए सामग्री की तथ्यात्मक सटीकता का विश्लेषण करें और 0-100 का स्कोर, व्याख्या, और सुधार के सुझाव प्रदान करें। परिणाम JSON प्रारूप में 'score', 'explanation', और 'suggestions' फ़ील्ड के साथ वापस करें।",
+    language: "Hindi"
+  },
+  'bn': {
+    system: "আপনি একজন তথ্য-যাচাই বিশেষজ্ঞ। প্রদত্ত বিষয়বস্তুর তথ্যগত নির্ভুলতা বিশ্লেষণ করুন এবং 0-100 এর মধ্যে স্কোর, ব্যাখ্যা এবং উন্নতির জন্য পরামর্শ প্রদান করুন। ফলাফল JSON ফরম্যাটে 'score', 'explanation', এবং 'suggestions' ফিল্ড সহ প্রদান করুন।",
+    language: "Bengali"
+  },
+  'kn': {
+    system: "ನೀವು ಒಬ್ಬ ವಾಸ್ತವ-ಪರಿಶೀಲನಾ ತಜ್ಞರಾಗಿದ್ದೀರಿ। ನೀಡಲಾದ ವಿಷಯದ ವಾಸ್ತವಿಕ ನಿಖರತೆಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ ಮತ್ತು 0-100 ಅಂಕಗಳನ್ನು, ವಿವರಣೆ ಮತ್ತು ಸುಧಾರಣೆಗಾಗಿ ಸಲಹೆಗಳನ್ನು ನೀಡಿ। ಫಲಿತಾಂಶಗಳನ್ನು JSON ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿ 'score', 'explanation', ಮತ್ತು 'suggestions' ಫೀಲ್ಡ್‌ಗಳೊಂದಿಗೆ ಹಿಂತಿರುಗಿಸಿ।",
+    language: "Kannada"
   }
-}
+};
 
 export async function factCheck(content: string, language: string = 'en'): Promise<FactCheckResult> {
   try {
     console.log(`Starting fact check in language: ${language}`);
 
-    // First, get fact check results in English
+    // Use default English if language not supported
+    const promptConfig = languagePrompts[language as keyof typeof languagePrompts] || languagePrompts.en;
+
+    console.log(`Using ${promptConfig.language} for fact checking`);
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "You are a fact-checking expert. Analyze the given content for factual accuracy and provide a score from 0-100, explanation, and suggestions for improvement. Return the results in JSON format."
+          content: promptConfig.system
         },
         {
           role: "user",
@@ -83,48 +61,13 @@ export async function factCheck(content: string, language: string = 'en'): Promi
       throw new Error("service unavailable");
     }
 
-    const factCheckResult = {
+    return {
       score: Math.min(100, Math.max(0, result.score)),
       explanation: result.explanation,
       suggestions: result.suggestions || [],
     };
-
-    // If language is not English, translate the response
-    if (language !== 'en' && languageMap[language as keyof typeof languageMap]) {
-      try {
-        console.log(`Starting translation to ${language}`);
-
-        // Translate explanation
-        const translatedExplanation = await translateText(factCheckResult.explanation, language);
-
-        // Translate suggestions
-        const translatedSuggestions = await Promise.all(
-          factCheckResult.suggestions.map(async (suggestion: string) => {
-            return await translateText(suggestion, language);
-          })
-        );
-
-        console.log(`Successfully completed translation to ${language}`);
-
-        return {
-          ...factCheckResult,
-          explanation: translatedExplanation,
-          suggestions: translatedSuggestions,
-        };
-      } catch (error: any) {
-        console.error(`Failed to translate fact check results to ${language}:`, error);
-        // Re-throw with appropriate error type
-        if (error.message === 'network error') {
-          throw new Error("network error");
-        }
-        throw new Error("service unavailable");
-      }
-    }
-
-    return factCheckResult;
   } catch (error: any) {
     console.error("Fact check error:", error);
-    // Ensure consistent error messages
     if (error.code === 'ECONNREFUSED' || error.message?.includes('network') || error.message?.includes('timeout')) {
       throw new Error("network error");
     }
