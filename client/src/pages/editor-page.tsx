@@ -35,7 +35,7 @@ export default function EditorPage() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { t } = useTranslations();
+  const { t, language } = useTranslations();
   const [isFactCheckDialogOpen, setIsFactCheckDialogOpen] = useState(false);
   const [factCheckResult, setFactCheckResult] = useState<{ score: number; explanation: string } | null>(null);
 
@@ -123,7 +123,10 @@ export default function EditorPage() {
 
   const factCheckMutation = useMutation({
     mutationFn: async (content: string) => {
-      const res = await apiRequest("POST", "/api/fact-check", { content });
+      const res = await apiRequest("POST", "/api/fact-check", { 
+        content,
+        language // Use the current language from translations context
+      });
       return await res.json();
     },
     onSuccess: (data) => {

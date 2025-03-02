@@ -4,7 +4,6 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY is required");
 }
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export interface FactCheckResult {
@@ -13,8 +12,32 @@ export interface FactCheckResult {
   suggestions: string[];
 }
 
-export async function factCheck(content: string): Promise<FactCheckResult> {
+async function translateText(text: string, targetLanguage: string): Promise<string> {
   try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: `You are a professional translator. Translate the following text to ${targetLanguage} while maintaining the same tone and meaning. Return only the translated text without any additional context or explanation.`
+        },
+        {
+          role: "user",
+          content: text
+        }
+      ]
+    });
+
+    return response.choices[0].message.content;
+  } catch (error) {
+    console.error("Translation error:", error);
+    throw new Error("Failed to translate text: " + error.message);
+  }
+}
+
+export async function factCheck(content: string, language: string = 'en'): Promise<FactCheckResult> {
+  try {
+    // First, get fact check results in English
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -31,11 +54,27 @@ export async function factCheck(content: string): Promise<FactCheckResult> {
     });
 
     const result = JSON.parse(response.choices[0].message.content);
-    return {
+    const factCheckResult = {
       score: Math.min(100, Math.max(0, result.score)),
       explanation: result.explanation,
       suggestions: result.suggestions,
     };
+
+    // If language is not English, translate the explanation and suggestions
+    if (language !== 'en') {
+      const translatedExplanation = await translateText(factCheckResult.explanation, language);
+      const translatedSuggestions = await Promise.all(
+        factCheckResult.suggestions.map(suggestion => translateText(suggestion, language))
+      );
+
+      return {
+        ...factCheckResult,
+        explanation: translatedExplanation,
+        suggestions: translatedSuggestions,
+      };
+    }
+
+    return factCheckResult;
   } catch (error) {
     throw new Error("Failed to perform fact check: " + error.message);
   }

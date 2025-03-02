@@ -17,7 +17,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/contents", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     const parsed = insertContentSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json(parsed.error);
@@ -32,32 +32,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/contents/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     const content = await storage.getContent(parseInt(req.params.id));
     if (!content) return res.sendStatus(404);
     if (content.authorId !== req.user.id) return res.sendStatus(403);
-    
+
     res.json(content);
   });
 
   app.patch("/api/contents/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     const content = await storage.getContent(parseInt(req.params.id));
     if (!content) return res.sendStatus(404);
     if (content.authorId !== req.user.id) return res.sendStatus(403);
-    
+
     const updated = await storage.updateContent(content.id, req.body);
     res.json(updated);
   });
 
   app.delete("/api/contents/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     const content = await storage.getContent(parseInt(req.params.id));
     if (!content) return res.sendStatus(404);
     if (content.authorId !== req.user.id) return res.sendStatus(403);
-    
+
     await storage.deleteContent(content.id);
     res.sendStatus(204);
   });
@@ -65,20 +65,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI routes
   app.post("/api/fact-check", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
-    const { content } = req.body;
+
+    const { content, language = 'en' } = req.body;
     if (!content) return res.status(400).json({ message: "Content is required" });
-    
-    const result = await factCheck(content);
-    res.json(result);
+
+    try {
+      const result = await factCheck(content, language);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
   });
 
   app.post("/api/suggest", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     const { content } = req.body;
     if (!content) return res.status(400).json({ message: "Content is required" });
-    
+
     const suggestions = await suggestImprovements(content);
     res.json({ suggestions });
   });
