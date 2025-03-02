@@ -12,14 +12,24 @@ export interface FactCheckResult {
   suggestions: string[];
 }
 
+const languageMap = {
+  'hi': 'Hindi',
+  'bn': 'Bengali',
+  'kn': 'Kannada',
+  'en': 'English'
+};
+
 async function translateText(text: string, targetLanguage: string): Promise<string> {
   try {
+    // Map the language code to full language name
+    const languageName = languageMap[targetLanguage as keyof typeof languageMap] || targetLanguage;
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: `You are a professional translator. Translate the following text to ${targetLanguage} while maintaining the same tone and meaning. Return only the translated text without any additional context or explanation.`
+          content: `You are a professional translator. Translate the following text to ${languageName} while maintaining the same tone and meaning. Return only the translated text without any additional context or explanation.`
         },
         {
           role: "user",
@@ -87,7 +97,7 @@ export async function factCheck(content: string, language: string = 'en'): Promi
       } catch (error: any) {
         // If translation fails, return the English result with a note about translation failure
         console.error("Translation failed:", error);
-        return factCheckResult;
+        throw new Error("network error"); // Propagate error to trigger proper error handling
       }
     }
 
@@ -118,9 +128,10 @@ export async function suggestImprovements(content: string): Promise<string[]> {
       response_format: { type: "json_object" }
     });
 
-    const result = JSON.parse(response.choices[0].message.content);
-    return result.suggestions;
-  } catch (error) {
-    throw new Error("Failed to generate suggestions: " + error.message);
+    const result = JSON.parse(response.choices[0].message.content || '{}');
+    return result.suggestions || [];
+  } catch (error: unknown) {
+    const err = error as Error;
+    throw new Error("Failed to generate suggestions: " + err.message);
   }
 }
