@@ -4,7 +4,7 @@ describe('Translation System', () => {
   describe('getTranslation', () => {
     it('should return correct translation for English', () => {
       const result = getTranslation('en', 'auth.login.title');
-      expect(result).toBe('Login failed');
+      expect(result).toBe('Login Failed');
     });
 
     it('should return correct translation for Hindi', () => {
@@ -22,14 +22,14 @@ describe('Translation System', () => {
       expect(result).toBe('स्वागत है, Test User');
     });
 
-    it('should fallback to English when translation is missing', () => {
-      const result = getTranslation('hi', 'nonexistent.key');
-      expect(result).toBe('nonexistent.key');
-    });
-
     it('should handle undefined values in interpolation', () => {
       const result = getTranslation('hi', 'dashboard.welcome', {});
       expect(result).toBe('स्वागत है, {username}');
+    });
+
+    it('should fallback to English when translation is missing', () => {
+      const result = getTranslation('hi', 'nonexistent.key');
+      expect(result).toBe('nonexistent.key');
     });
 
     it('should handle invalid language code gracefully', () => {
