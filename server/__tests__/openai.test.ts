@@ -3,14 +3,17 @@
 // Mock OpenAI module
 jest.mock('openai');
 
-describe('Fact Check Service', () => {
+describe('OpenAI Service', () => {
   let mockCreate: jest.Mock;
   let factCheck: typeof import('../openai').factCheck;
+  let suggestImprovements: typeof import('../openai').suggestImprovements;
+  const originalEnv = process.env;
 
   beforeEach(() => {
     // Reset all mocks and modules
     jest.resetModules();
     jest.clearAllMocks();
+    process.env = { ...originalEnv, OPENAI_API_KEY: 'test-key' };
 
     // Setup fresh mocks for each test
     mockCreate = jest.fn();
@@ -26,8 +29,23 @@ describe('Fact Check Service', () => {
     const { OpenAI } = require('openai');
     (OpenAI as jest.Mock).mockImplementation(() => mockOpenAIInstance);
 
-    // Re-import the factCheck function after mocks are set up
-    factCheck = require('../openai').factCheck;
+    // Re-import the functions after mocks are set up
+    const openai = require('../openai');
+    factCheck = openai.factCheck;
+    suggestImprovements = openai.suggestImprovements;
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  describe('OpenAI Configuration', () => {
+    it('should throw error if OPENAI_API_KEY is not set', () => {
+      jest.isolateModules(() => {
+        process.env = {};
+        expect(() => require('../openai')).toThrow('OPENAI_API_KEY is required');
+      });
+    });
   });
 
   describe('factCheck', () => {
@@ -127,7 +145,6 @@ describe('Fact Check Service', () => {
       };
 
       mockCreate.mockResolvedValueOnce(mockResponse);
-
       await expect(factCheck("Test content", "en")).rejects.toThrow("service unavailable");
     });
 
@@ -143,7 +160,6 @@ describe('Fact Check Service', () => {
       };
 
       mockCreate.mockResolvedValueOnce(mockResponse);
-
       await expect(factCheck("Test content", "en")).rejects.toThrow("service unavailable");
     });
 
@@ -255,6 +271,118 @@ describe('Fact Check Service', () => {
 
       mockCreate.mockResolvedValueOnce(mockResponse);
       await expect(factCheck("Test content", "en")).rejects.toThrow("service unavailable");
+    });
+
+    it('should handle missing choices in response', async () => {
+      const mockResponse = {};
+
+      mockCreate.mockResolvedValueOnce(mockResponse);
+      await expect(factCheck("Test content", "en")).rejects.toThrow("service unavailable");
+    });
+
+    it('should handle undefined message content', async () => {
+      const mockResponse = {
+        choices: [{
+          message: {}
+        }]
+      };
+
+      mockCreate.mockResolvedValueOnce(mockResponse);
+      await expect(factCheck("Test content", "en")).rejects.toThrow("service unavailable");
+    });
+  });
+
+  describe('suggestImprovements', () => {
+    it('should return improvement suggestions', async () => {
+      const mockResponse = {
+        choices: [{
+          message: {
+            content: JSON.stringify({
+              suggestions: [
+                "Add more specific examples",
+                "Include recent sources"
+              ]
+            })
+          }
+        }]
+      };
+
+      mockCreate.mockResolvedValueOnce(mockResponse);
+
+      const result = await suggestImprovements("Test content");
+      expect(result).toEqual([
+        "Add more specific examples",
+        "Include recent sources"
+      ]);
+
+      expect(mockCreate).toHaveBeenCalledWith({
+        model: "gpt-4o",
+        messages: expect.arrayContaining([
+          expect.objectContaining({
+            role: "system",
+            content: expect.stringContaining("content improvement expert")
+          })
+        ]),
+        response_format: { type: "json_object" }
+      });
+    });
+
+    it('should handle empty response', async () => {
+      const mockResponse = {
+        choices: [{
+          message: {
+            content: JSON.stringify({})
+          }
+        }]
+      };
+
+      mockCreate.mockResolvedValueOnce(mockResponse);
+      const result = await suggestImprovements("Test content");
+      expect(result).toEqual([]);
+    });
+
+    it('should handle network errors', async () => {
+      const error = new Error("Network error");
+      mockCreate.mockRejectedValueOnce(error);
+
+      await expect(suggestImprovements("Test content"))
+        .rejects
+        .toThrow("Failed to generate suggestions: Network error");
+    });
+
+    it('should handle invalid JSON response', async () => {
+      const mockResponse = {
+        choices: [{
+          message: {
+            content: "invalid json"
+          }
+        }]
+      };
+
+      mockCreate.mockResolvedValueOnce(mockResponse);
+      await expect(suggestImprovements("Test content"))
+        .rejects
+        .toThrow("Failed to generate suggestions: Unexpected token");
+    });
+
+    it('should handle missing choices in response', async () => {
+      const mockResponse = {};
+
+      mockCreate.mockResolvedValueOnce(mockResponse);
+      await expect(suggestImprovements("Test content"))
+        .rejects
+        .toThrow("Failed to generate suggestions");
+    });
+
+    it('should handle empty choices array', async () => {
+      const mockResponse = {
+        choices: []
+      };
+
+      mockCreate.mockResolvedValueOnce(mockResponse);
+      await expect(suggestImprovements("Test content"))
+        .rejects
+        .toThrow("Failed to generate suggestions");
     });
   });
 });
