@@ -4,11 +4,18 @@ const config: Config.InitialOptions = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   roots: ['<rootDir>/server', '<rootDir>/client/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx', '**/?(*.)+(spec|test).ts', '**/?(*.)+(spec|test).tsx'],
+  testMatch: [
+    '**/__tests__/**/*.ts',
+    '**/__tests__/**/*.tsx',
+    '**/?(*.)+(spec|test).ts',
+    '**/?(*.)+(spec|test).tsx'
+  ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
-      jsx: 'react-jsx'
+      babelConfig: {
+        presets: ['@babel/preset-react', '@babel/preset-typescript']
+      }
     }]
   },
   moduleNameMapper: {
@@ -21,7 +28,7 @@ const config: Config.InitialOptions = {
     url: 'http://localhost'
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(@testing-library)/)'
+    'node_modules/(?!(@testing-library|wouter)/)'
   ],
   collectCoverage: true,
   coverageReporters: ['text', 'lcov'],
@@ -33,7 +40,8 @@ const config: Config.InitialOptions = {
       lines: 80,
       statements: 80,
     },
-  }
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node']
 };
 
 export default config;
